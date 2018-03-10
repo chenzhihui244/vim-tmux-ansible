@@ -1,0 +1,18 @@
+---
+- name: Install tmux
+  apt:
+    name: tmux
+    state: present
+  when: "ansible_distribution == 'Ubuntu'"
+
+- name: Configure term
+  lineinfile:
+    create=yes
+    path=~/.bashrc
+    line="alias tmux='TERM=screen-256color-bce tmux'"
+    state=present
+
+- name: Configure tmux
+  copy:
+    src: tmux.conf
+    dest: ~/.tmux.conf

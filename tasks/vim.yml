@@ -1,0 +1,98 @@
+---
+# tasks file for vim
+
+- name: Install dependencies on Ubuntu
+  apt:
+    name: libncurses5-dev,libgnome2-dev,libgnomeui-dev,libgtk2.0-dev,libatk1.0-dev,libbonoboui2-dev,libcairo2-dev,libx11-dev,libxpm-dev,libxt-dev,python-dev,python3-dev,ruby-dev,liblua5.1-0,liblua5.1-dev,libperl-dev,git
+    state: present
+  when: "ansible_distribution == 'Ubuntu'"
+
+- name: Remove vim on Ubuntu
+  apt:
+    name: gvim
+    state: absent
+  when: "ansible_distribution == 'Ubuntu'"
+
+- name: Install dependencies on Redhat
+  yum:
+    name: ruby,ruby-devel,lua,lua-devel,luajit,luajit-devel,ctags,git,python,python-devel,python3,python3-devel,tcl-devel,perl,perl-devel,perl-ExtUtils-ParseXS,perl-ExtUtils-XSpp,perl-ExtUtils-CBuilder,perl-ExtUtils-Embed
+    state: present
+  when: "ansible_distribution == 'RedHat'"
+
+- name: Remove vim on Redhat
+  yum:
+    name: gvim
+    state: absent
+  when: "ansible_distribution == 'RedHat'"
+
+- name: copy vim src
+  copy:
+    src: vim-v8.0.1591.zip
+    dest: ~/vim-v8.0.1591.zip
+
+- name: Unzip vim src
+  shell:
+    cd ~;
+    unzip -o vim-v8.0.1591.zip
+
+- name: Build vim
+  shell:
+    cd ~/vim-8.0.1591;
+    ./configure --with-features=huge \
+            --enable-multibyte \
+            --enable-rubyinterp=yes \
+            --enable-pythoninterp=yes \
+            --with-python-config-dir=/usr/lib/python2.7/config-aarch64-linux-gnu \
+            --enable-perlinterp=yes \
+            --enable-luainterp=yes \
+            --enable-cscope \
+            --prefix=/usr/local;
+    make -j{{ ansible_processor_count }} VIMRUNTIMEDIR=/usr/local/share/vim/vim80;
+    make install;
+    update-alternatives --install /usr/bin/editor editor /usr/local/bin/vim 1;
+    update-alternatives --set editor /usr/local/bin/vim;
+    update-alternatives --install /usr/bin/vi vi /usr/local/bin/vim 1;
+    update-alternatives --set vi /usr/local/bin/vim
+
+- name: download vimconf
+  git:
+    repo: https://github.com/chenzhihui244/vimconfig.git
+    dest: ~/vimconfig
+    version: master
+
+- name: remove .vimrc
+  file:
+    path: ~/vimconfig/.vimrc
+    state: absent
+
+- name: link .vimrc
+  file:
+    src: ~/vimconfig/vimrc
+    dest: ~/.vimrc
+    state: link
+
+- name: remove .vim
+  file:
+    path: ~/.vim
+    state: absent
+
+- name: link .vim
+  file:
+    src: ~/vimconfig/vim
+    dest: ~/.vim
+    force: yes
+    state: link
+
+- name: download Vundle
+  git:
+    repo: https://github.com/VundleVim/Vundle.vim.git
+    dest: ~/.vim/bundle/Vundle.vim
+
+- name: install vim tools
+  apt:
+    name: exuberant-ctags,cscope
+    state: present
+
+- name: install vim plugins
+  shell:
+    /usr/local/bin/vim +PluginInstall +qall

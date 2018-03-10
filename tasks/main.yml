@@ -1,0 +1,4 @@
+---
+- include_tasks: powerline.yml
+- include_tasks: tmux.yml
+- import_tasks: vim.yml
