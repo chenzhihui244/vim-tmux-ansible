@@ -7,6 +7,12 @@
     state: present
   when: "ansible_distribution == 'Ubuntu'"
 
+- name: Install dependencies on Deepin
+  apt:
+    name: libncurses5-dev,libgnome2-dev,libgnomeui-dev,libgtk2.0-dev,libatk1.0-dev,libbonoboui2-dev,libcairo2-dev,libx11-dev,libxpm-dev,libxt-dev,python-dev,python3-dev,ruby-dev,liblua5.1-0,liblua5.1-dev,libperl-dev,git
+    state: present
+  when: "ansible_distribution == 'Deepin GNU/Linux'"
+
 - name: Remove vim on Ubuntu
   apt:
     name: gvim
