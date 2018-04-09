@@ -1,9 +1,21 @@
 ---
-- name: Install tmux
+- name: Install tmux on Ubuntu
   apt:
     name: tmux
     state: present
   when: "ansible_distribution == 'Ubuntu'"
+
+- name: Install tmux on Redhat
+  yum:
+      name: tmux
+      state: present
+  when: "ansible_distribution == 'Redhat'"
+
+- name: Install tmux on CentOS
+  yum:
+      name: tmux
+      state: present
+  when: "ansible_distribution == 'CentOS'"
 
 - name: Configure term
   lineinfile:

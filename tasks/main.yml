@@ -1,4 +1,40 @@
 ---
+- name: Install dependencies on Ubuntu
+  apt:
+    name: libncurses5-dev,libgnome2-dev,libgnomeui-dev,libgtk2.0-dev,libatk1.0-dev,libbonoboui2-dev,libcairo2-dev,libx11-dev,libxpm-dev,libxt-dev,python-dev,python3-dev,ruby-dev,liblua5.1-0,liblua5.1-dev,libperl-dev,git
+    state: present
+  when: "ansible_distribution == 'Ubuntu'"
+
+- name: Remove vim on Ubuntu
+  apt:
+    name: gvim
+    state: absent
+  when: "ansible_distribution == 'Ubuntu'"
+
+- name: Install dependencies on Redhat
+  yum:
+    name: ruby,ruby-libs,lua,ctags,git,python,python-devel,tcl-devel,perl,perl-devel,perl-ExtUtils-ParseXS,perl-ExtUtils-CBuilder,perl-ExtUtils-Embed
+    state: present
+  when: "ansible_distribution == 'RedHat'"
+
+- name: Remove vim on Redhat
+  yum:
+    name: gvim
+    state: absent
+  when: "ansible_distribution == 'RedHat'"
+
+- name: Install dependencies on CentOS
+  yum:
+    name: ruby,ruby-libs,lua,ctags,git,python,python-devel,tcl-devel,perl,perl-devel,perl-ExtUtils-ParseXS,perl-ExtUtils-CBuilder,perl-ExtUtils-Embed,unzip,gcc,ncurses-devel,ncurses-libs
+    state: present
+  when: "ansible_distribution == 'CentOS'"
+
+- name: Remove vim on CentOS
+  yum:
+    name: gvim
+    state: absent
+  when: "ansible_distribution == 'CentOS'"
+
 - include_tasks: powerline.yml
 - include_tasks: tmux.yml
 - import_tasks: vim.yml
